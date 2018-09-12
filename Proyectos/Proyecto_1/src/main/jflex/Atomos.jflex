@@ -11,12 +11,20 @@ package lexico;
 %unicode
 %standalone
 
-IDENTIFICADOR = ([a-zA-Z] | '_')([a-zA-Z] | [0-9] | '_')*
+IDENTIFICADOR = ([a-zA-Z] | \_)([a-zA-Z] | [0-9] | \_)*
 BOOLEANO = 'True' | 'False'
 ENTERO = [1-9][0-9]* | 0+
 REAL = '.'[0-9]+ | ENTERO'.'[0-9]+ | ENTERO'.'
+CADENA = \"[^\"\\\n]*\"
 
+RESERVADA = "and" | "or" | "not" | "while" | "if" | "else" | "elif" | "print"
+OPERADOR = \+ | \- | \* | \/ | \% | \< | \> | \>= | \<= | \= | \! | \=
+SALTO = \n
 %%
-{IDENTIFICADOR}  {System.out.println("ID");}
-#.* 	 {System.out.println("COMENTARIO");}
-{ENTERO} {System.out.println("ENTERO");}
+{RESERVADA} {System.out.print("RESERVADA ("+ yytext() + ")");}
+{IDENTIFICADOR}  {System.out.print("ID (" + yytext() + ")");}
+#.* 	 {System.out.print("COMENTARIO (" + yytext() + ")");}
+{ENTERO} {System.out.print("ENTERO (" + yytext() + ")");}
+{CADENA} {System.out.print("CADENA (" + yytext() + ")");}
+{OPERADOR} {System.out.print("OPERADOR (" + yytext() + ")");}
+{SALTO} {System.out.println("SALTO");}
