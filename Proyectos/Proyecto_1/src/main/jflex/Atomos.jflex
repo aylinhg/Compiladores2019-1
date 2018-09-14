@@ -17,6 +17,7 @@ import java.util.Stack;
     public Stack<Integer> pila = new Stack<Integer>();
     public int tabulado;
     public int espacios = 0;
+    public String cadenaActual;
 
 	public String identacion(){
 
@@ -84,17 +85,28 @@ SALTO           =   "\n"
 %x CONTEXTO
 
 %%
-
+[\n]                { System.out.println("SALTO"); yybegin(CONTEXTO); this.espacios = 0;
+}
 {RESERVADA} 		{System.out.print("RESERVADA("+ yytext() + ")");}
 {IDENTIFICADOR}  	{System.out.print("IDENTIFICADOR(" + yytext() + ")");}
 #.* 	 			{System.out.print("COMENTARIO(" + yytext() + ")");}
 {ENTERO} 			{System.out.print("ENTERO(" + yytext() + ")");}
 {BOOLEANO} 			{System.out.print("BOOLEANO(" + yytext() + ")");}
 {REAL}	 			{System.out.print("REAL(" + yytext() + ")");}
-{CADENA} 			{System.out.print("CADENA(" + yytext() + ")");}
+{CADENA}            { cadenaActual = yytext();
+                      if(cadenaActual.contains("\\") || cadenaActual.substring(1, cadenaActual.length()-1).contains("\"")){
+                       System.out.print("\nError de cadena: "+ cadenaActual +", linea:" + yyline);
+                       System.exit(0);
+                       }else{ 
+                            System.out.print("CADENA(" + yytext() + ")");  
+                            
+                       }
+}
 {OPERADOR} 			{System.out.print("OPERADOR(" + yytext() + ")");}
 {SEPARADOR}			{System.out.print("SEPARADOR(" + yytext() + ")");}
 {SALTO} 			{System.out.println("SALTO");}
+.                   { System.out.print("\nError, lexema no identificado, linea:" + yyline); 
+System.exit(0);}
 <CONTEXTO>{			{ESPACIO}      {this.espacios++; }
     				{TABULADOR}    {this.espacios+=4;}
     				. {yypushback(1); tabulado = this.espacios; System.out.println( identacion()); yybegin(YYINITIAL);}
