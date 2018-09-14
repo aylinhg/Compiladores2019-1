@@ -3,6 +3,7 @@
 **  @about Proyecto 1: Analizador léxico para p, subconjunto de Python.        **
 *********************************************************************************/
 package lexico;
+import java.util.Stack;
 
 %%
 
@@ -10,6 +11,53 @@ package lexico;
 %class Alexico
 %unicode
 %standalone
+
+%{
+	
+    public Stack<Integer> pila = new Stack<Integer>();
+    public int tabulado;
+    public int espacios = 0;
+
+	public String identacion(){
+
+		//Verificamos que sea la primera línea y que además la pila sea vacía
+	    if(tabulado == 0 && pila.empty()){
+	        pila.push(tabulado);
+	    }else{ //Sino, la pila no estará vacía
+	        // Si la identacion presentada es menor a la última anterior
+	        if(pila.peek() < tabulado){
+	            pila.push(tabulado);
+	        } 
+	    	// En otro caso, verifica si la identacion misma es menor a la última anterior
+	        else if( pila.peek() > tabulado){
+	            String tokens = "";
+	            // Se va sacando un bloque y generando un token hasta que empaten
+	            while( pila.peek() != tabulado ){
+	                if( tabulado > pila.peek() ){
+	                    //throw error
+	                    System.out.println("\nError identacion, linea "+ yyline);
+	                    System.exit(0);
+	                    break;              
+	               	}
+	                	tokens += "DEINDENTA(" + pila.pop() + ")";
+	            	}
+	            	return tokens;
+	        	}
+	        	// Y si no, verificamos que tengan la misma longitud, lo cual los pondría en el mismo bloque
+	        	else if( pila.peek() == tabulado ){
+	            	return "";
+	        	}
+	    	}
+	    	String identa = "INDENTA(" + tabulado + ")";
+	    	return identa;
+		}
+%}
+
+%eof{
+    while( pila.peek() != 0 ){
+        System.out.println( "DEINDENTA(" + pila.pop() + ")" );
+    }
+%eof}
 
 BOOLEANO        =   True | False
 
@@ -32,6 +80,9 @@ TABULADOR       =   "\t"
 ESPACIO         =   " "
 
 SALTO           =   "\n"
+
+%x CONTEXTO
+
 %%
 
 {RESERVADA} 		{System.out.print("RESERVADA("+ yytext() + ")");}
@@ -44,3 +95,7 @@ SALTO           =   "\n"
 {OPERADOR} 			{System.out.print("OPERADOR(" + yytext() + ")");}
 {SEPARADOR}			{System.out.print("SEPARADOR(" + yytext() + ")");}
 {SALTO} 			{System.out.println("SALTO");}
+<CONTEXTO>{			{ESPACIO}      {this.espacios++; }
+    				{TABULADOR}    {this.espacios+=4;}
+    				. {yypushback(1); tabulado = this.espacios; System.out.println( identacion()); yybegin(YYINITIAL);}
+}
