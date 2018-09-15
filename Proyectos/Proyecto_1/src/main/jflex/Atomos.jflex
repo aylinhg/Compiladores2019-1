@@ -6,6 +6,8 @@
 *********************************************************************************/
 package lexico;
 import java.util.Stack;
+import java.io.FileWriter;
+import java.io.IOException;
 
 %%
 
@@ -14,9 +16,24 @@ import java.util.Stack;
     public Stack<Integer> pila = new Stack<Integer>();
     public int tabulado;
     public int espacios = 0;
-    public String cadenaActual;
+    public String cadena;
+    public FileWriter fw;
 
-	public String indentacion(){
+    /**
+     * Escribe la cadena en un archivo.
+     */
+    /*public void escribirArchivo(String cadena) {
+    	try {
+	    	fw.write(cadena);
+	    } catch (IOException e) {
+	    	System.out.println("Error al escribir en el archivo: " + e.printStackTrace());
+	    }
+    }*/
+
+    /**
+     * Se encarga de la indentación del analizador léxico.
+     */
+	public String indentacion() throws IOException {
 		// Verificamos que sea la primera línea y que además la pila sea vacía
 	    if (tabulado == 0 && pila.empty()) {
 	        pila.push(tabulado);
@@ -33,20 +50,40 @@ import java.util.Stack;
 	                if (tabulado > pila.peek()) {
 	                    // Error de indentación
 	                    System.out.println("\nERROR de indentación, línea "+ yyline + "\n");
+	        			//try {
+	    	    			fw.write("\nERROR de indentación, línea "+ yyline + "\n");
+	    	    		/*} catch (IOException e) {
+	    	    			System.out.println("Error al escribir en el archivo: " + e.printStackTrace());
+	    	    		}*/                
+	                    //escribirArchivo("\nERROR de indentación, línea "+ yyline + "\n");
+	                    fw.flush();
+	                    fw.close();
 	                    System.exit(0);
 	                    //break;              
 	               	}
-	                	tokens += "DEINDENTA(" + pila.pop() + ")";
-	            	}
+	               	//try {
+	    	    		fw.write("DEINDENTA(" + pila.pop() + ")");
+	    	    	/*} catch (IOException e) {
+	    	    		System.out.println("Error al escribir en el archivo: " + e.printStackTrace());
+	    	    	} */	
+	               	//escribirArchivo("DEINDENTA(" + pila.pop() + ")");
+	                tokens += "DEINDENTA(" + pila.pop() + ")";
+	            }
 	            	return tokens;
-	        	}
-	        	// Y si no, verificamos que tengan la misma longitud, lo cual los pondría en el mismo bloque
-	        	else if (pila.peek() == tabulado) {
-	            	return "";
-	        	}
-	    	}
-	    	return "INDENTA(" + tabulado + ")";
-		}
+	        }
+	        // Y si no, verificamos que tengan la misma longitud, lo cual los pondría en el mismo bloque
+	        else if (pila.peek() == tabulado) {
+	            return "";
+	        }
+	    }
+	    //try {
+	    	fw.write("INDENTA(" + tabulado + ")");
+	    /*} catch (IOException e) {
+	    	System.out.println("Error al escribir en el archivo: " + e.printStackTrace());
+	    } */
+	    //escribirArchivo("INDENTA(" + tabulado + ")");
+	    return "INDENTA(" + tabulado + ")";
+	}
 %}
 
 %class Alexico
@@ -95,24 +132,39 @@ COMENTARIO		= 	#.*
 {PARENTESIS_DER}	{}
 {ESPACIO}			{}
 {SALTO}             {System.out.println("SALTO"); yybegin(CONTEXTO); this.espacios = 0;
-					}
-{RESERVADA} 		{System.out.print("RESERVADA("+ yytext() + ")");}
-{IDENTIFICADOR}  	{System.out.print("IDENTIFICADOR(" + yytext() + ")");}
-{COMENTARIO} 	 	{System.out.print("COMENTARIO(" + yytext() + ")");}
-{ENTERO} 			{System.out.print("ENTERO(" + yytext() + ")");}
-{BOOLEANO} 			{System.out.print("BOOLEANO(" + yytext() + ")");}
-{REAL}	 			{System.out.print("REAL(" + yytext() + ")");}
-{CADENA}            {cadenaActual = yytext();
-                      if (cadenaActual.contains("\\") || cadenaActual.substring(1, cadenaActual.length()-1).contains("\"")) {
-                       		System.out.print("\nERROR: Cadena mal formada: "+ cadenaActual +", línea:" + yyline + "\n");
+					fw.write("SALTO");}
+{RESERVADA} 		{System.out.print("RESERVADA("+ yytext() + ")");
+					fw.write("RESERVADA("+ yytext() + ")");}
+{IDENTIFICADOR}  	{System.out.print("IDENTIFICADOR(" + yytext() + ")");
+					fw.write("IDENTIFICADOR(" + yytext() + ")");}
+{COMENTARIO} 	 	{System.out.print("COMENTARIO(" + yytext() + ")");
+					fw.write("COMENTARIO(" + yytext() + ")");}
+{ENTERO} 			{System.out.print("ENTERO(" + yytext() + ")");
+					fw.write("ENTERO(" + yytext() + ")");}
+{BOOLEANO} 			{System.out.print("BOOLEANO(" + yytext() + ")");
+					fw.write("BOOLEANO(" + yytext() + ")");}
+{REAL}	 			{System.out.print("REAL(" + yytext() + ")");
+					fw.write("REAL(" + yytext() + ")");}
+{CADENA}            {cadena = yytext();
+                      if (cadena.contains("\\") || cadena.substring(1, cadena.length()-1).contains("\"")) {
+                       		System.out.print("\nERROR: Cadena mal formada: "+ cadena +", línea:" + yyline + "\n");
+                       		fw.write("\nERROR: Cadena mal formada: "+ cadena +", línea:" + yyline + "\n");
+                       		fw.flush();
+                       		fw.close();
                        		System.exit(0);
                        } else { 
-                        	System.out.print("CADENA(" + yytext() + ")"); 
+                        	System.out.print("CADENA(" + yytext() + ")");
+                        	fw.write("CADENA(" + yytext() + ")"); 
                        }
 					}
-{OPERADOR} 			{System.out.print("OPERADOR(" + yytext() + ")");}
-{SEPARADOR}			{System.out.print("SEPARADOR(" + yytext() + ")");}
-.                   {System.out.print("\nERROR: Lexema no identificado, línea:" + yyline + "\n"); 
+{OPERADOR} 			{System.out.print("OPERADOR(" + yytext() + ")");
+					fw.write("OPERADOR(" + yytext() + ")");}
+{SEPARADOR}			{System.out.print("SEPARADOR(" + yytext() + ")");
+					fw.write("SEPARADOR(" + yytext() + ")");}
+.                   {System.out.print("\nERROR: Lexema no identificado, línea:" + yyline + "\n");
+					fw.write("\nERROR: Lexema no identificado, línea:" + yyline + "\n");
+					fw.flush(); 
+					fw.close();
 					System.exit(0);}
 <CONTEXTO>{			{ESPACIO}      {this.espacios++;}
     				{TABULADOR}    {this.espacios+=4;}
