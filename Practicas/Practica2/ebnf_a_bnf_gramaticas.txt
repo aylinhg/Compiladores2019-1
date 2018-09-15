@@ -1,0 +1,35 @@
+Conversión de las gramáticas de EBNF a BNF
+
+/****************/
+ * Gramática 1	*
+/****************/
+EBNF
+
+E := {E (+ | -)} T
+T := {T (* | /)} F
+F := [-] NUMBER
+
+BNF
+
+E : T | E' T
+E': E + | E - | E + E' | E - E'
+T : F | T' F
+T': T * | T / | T * T' | T / T'
+F : - NUMBER | NUMBER
+
+/****************/
+ * Gramática 2	*
+/****************/
+EBNF
+
+E := T {(+ | -) E} 
+T := F {(* | /) T}
+F := [-] NUMBER
+
+BNF
+
+E : T | T E'
+E': + E | - E | + E E' | - E E'
+T : F | F T'
+T': * T | / T | * T T' | / T T'
+F : - NUMBER | NUMBER
