@@ -7,11 +7,11 @@ import java.io.*;
 %token <sval> ADD, SUB, MULT, DIV
 %token <dval> NUMBER
 %type <dval> EXPR
-%type <dval> E, T, EADD, ESUB, TMULT, TDIV, F 
+%type <dval> E, T, EADD, ESUB, TMULT, TDIV, F, EAUX
 
 %%
 EXPR: 	{System.out.println("[OK]");}
-		| E {System.out.println("[OK]");}
+		| E {$$ = $1; System.out.println("[OK] Resultado: " + $$);}
 		;
 
 E:		T 			{$$ = $1; dump_stacks(stateptr);}
@@ -22,8 +22,13 @@ E:		T 			{$$ = $1; dump_stacks(stateptr);}
 EADD:	ADD E 		{$$ = $2; dump_stacks(stateptr);}
 		;
 
-ESUB:	SUB E 		{$$ = $2; dump_stacks(stateptr);}
+ESUB:	SUB EAUX		{$$ = $2; dump_stacks(stateptr);}
 		;
+
+EAUX: 	T 			{$$ = -1 * $1; dump_stacks(stateptr);}
+		|	T EADD	{$$ = $1 - $2; dump_stacks(stateptr);}
+		|	T ESUB	{$$ = $1 + $2; dump_stacks(stateptr);}
+
 
 T:		F 			{$$ = $1; dump_stacks(stateptr);}
 		| F TMULT	{$$ = $1 * $2; dump_stacks(stateptr);}
@@ -44,6 +49,12 @@ F:		NUMBER 		{$$ = $1; dump_stacks(stateptr);}
 
 private Letras alexico;
 
+private Parser parser;
+public Letras(java.io.Reader r, Parser p){
+	this(r);
+	parser = p;
+}
+
 /* Regresar átomos */
 private int yylex() {
 	int yyl_return = -1;
@@ -63,7 +74,7 @@ public void yyerror(String error) {
 
 /* Constructor. */
 public Parser(Reader r) {
-	alexico = new Letras(r);
+	alexico = new Letras(r,this);
 }
 
 /* Analizador sintáctico sobre un archivo. */
