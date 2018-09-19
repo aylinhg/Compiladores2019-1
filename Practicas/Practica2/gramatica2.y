@@ -7,7 +7,7 @@ import java.io.*;
 %token <sval> ADD, SUB, MULT, DIV
 %token <dval> NUMBER
 %type <dval> EXPR
-%type <dval> E, T, EADD, ESUB, TMULT, TDIV, F, EAUX
+%type <dval> E, T, EADD, ESUB, TMULT, TDIV, F
 
 %%
 EXPR: 	{System.out.println("[OK]");}
@@ -22,13 +22,8 @@ E:		T 			{$$ = $1; dump_stacks(stateptr);}
 EADD:	ADD E 		{$$ = $2; dump_stacks(stateptr);}
 		;
 
-ESUB:	SUB EAUX		{$$ = $2; dump_stacks(stateptr);}
+ESUB:	SUB E		{$$ = $2; dump_stacks(stateptr);}
 		;
-
-EAUX: 	T 			{$$ = -1 * $1; dump_stacks(stateptr);}
-		|	T EADD	{$$ = $1 - $2; dump_stacks(stateptr);}
-		|	T ESUB	{$$ = $1 + $2; dump_stacks(stateptr);}
-
 
 T:		F 			{$$ = $1; dump_stacks(stateptr);}
 		| F TMULT	{$$ = $1 * $2; dump_stacks(stateptr);}
