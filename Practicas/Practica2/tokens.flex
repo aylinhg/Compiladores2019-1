@@ -1,5 +1,14 @@
 // tokens.flex
 %%
+%{
+	private Parser parser;
+
+	public Letras (java.io.Reader r, Parser p){
+    	this(r);
+		parser = p;
+	}
+%}
+
 %class Letras
 %public
 %unicode
@@ -9,15 +18,16 @@ NUMBER = [0-9][0-9]* | [0-9][0-9]* \. [0-9]+
 
 %%
 
-"+" 		{return Parser.ADD;}
+"+" 		{parser.yyval = new ParserVal(yytext()); return Parser.ADD;}
 
-"-"			{return Parser.SUB;}
+"-"			{parser.yyval = new ParserVal(yytext()); return Parser.SUB;}
 
-"*" 		{return Parser.MULT;}
+"*" 		{parser.yyval = new ParserVal(yytext()); return Parser.MULT;}
 
-"/"			{return Parser.DIV;}
+"/"			{parser.yyval = new ParserVal(yytext()); return Parser.DIV;}
 
-{NUMBER}	{return Parser.NUMBER;}
+{NUMBER}	{double d = Double.parseDouble(yytext());
+parser.yylval = new ParserVal(d); return Parser.NUMBER;}
 
 " "			{}
 

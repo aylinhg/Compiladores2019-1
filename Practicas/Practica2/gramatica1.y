@@ -11,33 +11,33 @@ import java.io.*;
 
 %%
 EXPR: 	{System.out.println("[OK]");}
-		| E {System.out.println("[OK]");}
+		| E {$$ = $1; System.out.println("[OK] Resultado: "+ $$);}
 		;
 
-E:		T
-		| EADD T
-		| ESUB T
+E:		T 				{$$ = $1;}
+		| EADD T 		{$$ = $1 + $2;}
+		| ESUB T 		{$$ = $1 - $2;}
 		;
 
-EADD:	E ADD
+EADD:	E ADD 			{$$ = $1;}
 		;
 
-ESUB:	E SUB
+ESUB:	E SUB 			{$$ = $1;}
 		;
 
-T:		F
-		| TMULT F
-		| TDIV F
+T:		F 				{$$ = $1;}
+		| TMULT F 		{$$ = $1 * $2;}
+		| TDIV F 		{$$ = $1 / $2;}
 		;
 
-TMULT:	T MULT
+TMULT:	T MULT 			{$$ = $1;}
 		;
 
-TDIV:	T DIV
+TDIV:	T DIV 			{$$ = $1;}
 		;
 
-F:		NUMBER
-		| SUB NUMBER
+F:		NUMBER 			{$$ = $1;}
+		| SUB NUMBER 	{$$ = -1 * $2;}
 		;
 
 %%
@@ -63,7 +63,7 @@ public void yyerror(String error) {
 
 /* Constructor. */
 public Parser(Reader r) {
-	alexico = new Letras(r);
+	alexico = new Letras(r, this);
 }
 
 /* Analizador sintáctico sobre un archivo. */
