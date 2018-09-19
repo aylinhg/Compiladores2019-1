@@ -14,30 +14,30 @@ EXPR: 	{System.out.println("[OK]");}
 		| E {System.out.println("[OK]");}
 		;
 
-E:		T
-		| T EADD 
-		| T ESUB
+E:		T 			{$$ = $1; dump_stacks(stateptr);}
+		| T EADD 	{$$ = $1 + $2; dump_stacks(stateptr);}
+		| T ESUB	{$$ = $1 - $2; dump_stacks(stateptr);}
 		;
 
-EADD:	ADD E
+EADD:	ADD E 		{$$ = $2; dump_stacks(stateptr);}
 		;
 
-ESUB:	SUB E
+ESUB:	SUB E 		{$$ = $2; dump_stacks(stateptr);}
 		;
 
-T:		F
-		| F TMULT
-		| F TDIV
+T:		F 			{$$ = $1; dump_stacks(stateptr);}
+		| F TMULT	{$$ = $1 * $2; dump_stacks(stateptr);}
+		| F TDIV 	{$$ = $1 / $2; dump_stacks(stateptr);}
 		;
 
-TMULT:	MULT T
+TMULT:	MULT T 		{$$ = $2; dump_stacks(stateptr);}
 		;
 
-TDIV:	DIV T
+TDIV:	DIV T 		{ $$ = $2; dump_stacks(stateptr);}
 		;
 
-F:		NUMBER
-		| SUB NUMBER
+F:		NUMBER 		{$$ = $1; dump_stacks(stateptr);}
+		| SUB NUMBER	{$$ = -1 * $2; dump_stacks(stateptr);}
 		;
 
 %%
