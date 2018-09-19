@@ -49,11 +49,6 @@ F:		NUMBER 		{$$ = $1; dump_stacks(stateptr);}
 
 private Letras alexico;
 
-private Parser parser;
-public Letras(java.io.Reader r, Parser p){
-	this(r);
-	parser = p;
-}
 
 /* Regresar átomos */
 private int yylex() {
