@@ -20,3 +20,11 @@ Para poder probar la salida de la gramática 2, se debe modificar el archivo mak
 ```bash
 jflex tokens.flex && byaccj -v -Jclass=Parser gramatica2.y
 ```
+
+### Nota2:
+
+La transformación de EBNF a BNF se encuentra en el archivo "ebn_a_bnfgramaticas.txt"
+
+### Nota3:
+
+La respuesta a la pregunta de la actividad extra se encuentra en el archivo "Respuesta.txt"

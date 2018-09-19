@@ -1,0 +1,4 @@
+En la gramática 1 el resultado de "3-2+8" es "9"
+En la gramática 2 el resultado de "3-2+8" es "-7"
+
+Los resultados son diferentes porque en la gramática 2 se invirtió el orden de los símbolos con respecto a la 1, de esta manera se alteró el funcionamiento de la misma haciendo que el resultado sea distinto.
