@@ -20,17 +20,6 @@ import java.io.IOException;
     public FileWriter fw;
 
     /**
-     * Escribe la cadena en un archivo.
-     */
-    /*public void escribirArchivo(String cadena) {
-    	try {
-	    	fw.write(cadena);
-	    } catch (IOException e) {
-	    	System.out.println("Error al escribir en el archivo: " + e.printStackTrace());
-	    }
-    }*/
-
-    /**
      * Se encarga de la indentación del analizador léxico.
      */
 	public String indentacion() throws IOException {
@@ -38,7 +27,8 @@ import java.io.IOException;
 	    if (tabulado == 0 && pila.empty()) {
 	        pila.push(tabulado);
 	    } else { // Si no, la pila no estará vacía
-	        // Si la identacion presentada es menor a la última anterior
+	    	
+	    	// Si la identacion presentada es menor a la última anterior
 	        if (pila.peek() < tabulado) {
 	            pila.push(tabulado);
 	        } 
@@ -50,24 +40,14 @@ import java.io.IOException;
 	                if (tabulado > pila.peek()) {
 	                    // Error de indentación
 	                    System.out.println("\nERROR de indentación, línea "+ yyline + "\n");
-	        			//try {
-	    	    			fw.write("\nERROR de indentación, línea "+ yyline + "\n");
-	    	    		/*} catch (IOException e) {
-	    	    			System.out.println("Error al escribir en el archivo: " + e.printStackTrace());
-	    	    		}*/                
-	                    //escribirArchivo("\nERROR de indentación, línea "+ yyline + "\n");
+	        			fw.write("\nERROR de indentación, línea "+ yyline + "\n");
 	                    fw.flush();
 	                    fw.close();
 	                    System.exit(0);
-	                    //break;              
+	                    break;              
 	               	}
-	               	//try {
-	    	    		fw.write("DEINDENTA(" + pila.pop() + ")");
-	    	    	/*} catch (IOException e) {
-	    	    		System.out.println("Error al escribir en el archivo: " + e.printStackTrace());
-	    	    	} */	
-	               	//escribirArchivo("DEINDENTA(" + pila.pop() + ")");
-	                tokens += "DEINDENTA(" + pila.pop() + ")";
+	               	fw.write("DEINDENTA(" + pila.peek() + ")");
+	    	    	tokens += "DEINDENTA(" + pila.pop() + ")";
 	            }
 	            	return tokens;
 	        }
@@ -76,12 +56,7 @@ import java.io.IOException;
 	            return "";
 	        }
 	    }
-	    //try {
-	    	fw.write("INDENTA(" + tabulado + ")");
-	    /*} catch (IOException e) {
-	    	System.out.println("Error al escribir en el archivo: " + e.printStackTrace());
-	    } */
-	    //escribirArchivo("INDENTA(" + tabulado + ")");
+	    fw.write("INDENTA(" + tabulado + ")");
 	    return "INDENTA(" + tabulado + ")";
 	}
 %}
@@ -107,6 +82,8 @@ REAL            =   \.[0-9]+ | ENTERO\.[0-9]+ | ENTERO\.
 
 CADENA          =   \"[^\"\\\n]*\"
 
+CADENAERRONEA   =   \"
+
 RESERVADA       =   and | or | not | while | if | else | elif | print
 
 IDENTIFICADOR   =   ([a-zA-Z] | \_)([a-zA-Z] | [0-9] | \_)*
@@ -119,7 +96,7 @@ TABULADOR       =   "\t"
 
 ESPACIO         =   " "
 
-SALTO           =   "\n"
+SALTO			=	"\n"
 
 PARENTESIS_IZQ	= 	"("
 
@@ -145,6 +122,12 @@ COMENTARIO		= 	#.*
 					fw.write("BOOLEANO(" + yytext() + ")");}
 {REAL}	 			{System.out.print("REAL(" + yytext() + ")");
 					fw.write("REAL(" + yytext() + ")");}
+{CADENAERRONEA}		{cadena = yytext();
+						System.out.print("\nERROR: Cadena mal formada: "+ cadena +", línea:" + (yyline+1) + "\n");
+                       	fw.write("\nERROR: Cadena mal formada: "+ cadena +", línea:" + (yyline+1) + "\n");
+                       	fw.flush();
+                       	fw.close();
+                       	System.exit(0);}					
 {CADENA}            {cadena = yytext();
                       if (cadena.contains("\\") || cadena.substring(1, cadena.length()-1).contains("\"")) {
                        		System.out.print("\nERROR: Cadena mal formada: "+ cadena +", línea:" + yyline + "\n");
