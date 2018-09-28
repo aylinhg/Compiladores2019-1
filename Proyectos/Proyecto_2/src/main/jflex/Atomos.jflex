@@ -74,83 +74,72 @@ import java.io.IOException;
     }
 %eof}
 
-BOOLEANO        =   True | False
+BOOLEANO       		  = 	  ("True" | "False")
 
-ENTERO          =   [1-9][0-9]* | 0+
+DIGITO 				  =		  [0-9]
 
-REAL            =   \.[0-9]+ | ENTERO\.[0-9]+ | ENTERO\.
+CERO 				  = 	  0+
 
-CADENA          =   \"[^\"\\\n]*\"
+ENTERO          	  =   	  {CERO} | {DIGITO}+ 
 
-CADENAERRONEA   =   \"
+PUNTO				  =    	  \.
 
-RESERVADA       =   and | or | not | while | if | else | elif | print
+REAL            	  =  	  {ENTERO}? {PUNTO} {ENTERO} | {ENTERO} {PUNTO} {ENTERO}?   
+	
+AND                   =       and
 
-IDENTIFICADOR   =   ([a-zA-Z] | \_)([a-zA-Z] | [0-9] | \_)*
+NOT                   =       not
 
-OPERADOR        =   \+ (=)? | \- (=)? | \* (=)? | \*\* | \/ (=)? | \/\/ | \% | \< | \> | \>\= | \<\= | \= | \! | \=\=  
+WHILE                 =       while
 
-SEPARADOR       =   \:
+OR                    =       or
 
-TABULADOR       =   "\t"
+ELSE                  =       else
 
-ESPACIO         =   " "
+IF                    =       if
 
-SALTO			=	"\n"
+PRINT                 =       print
 
-PARENTESIS_IZQ	= 	"("
+MAS                   =       "+"
 
-PARENTESIS_DER	= 	")"
+MENOS                 =       "-"
 
-COMENTARIO		= 	#.*
+MULT                  =       "*"
+
+POTENCIA              =       "**"
+
+DIVISION              =       "/"
+
+DIV_PISO              =       \/\/
+
+MODULO                =       "%"
+
+MENOR                 =       "<"
+
+MAYOR                 =       ">"
+
+MAYOR_IGUAL           =       ">="
+
+MENOR_IGUAL           =       "<=" 
+
+IGUAL                 =       "="
+
+DIFERENTE             =       "!="
+
+COMP_IGUAL            =       "=="
+
+DOS_PUNTOS            =       \:
+
+OPERADOR        	  =   	  (   "+" | "+=" | "-" | "-=" | "*" | "**" | "/" | "//" | "%" | "<" | "<=" | ">" | ">=" | "=" | "=="| "!="| "<>" )
+
+SEPARADOR       	  =   	  ( "(" | ")" | ":" | ";") 
+	 
+CARACTER   			  =	      ([:letter:] | [:digit:] | "_" | "$" | " " | "#" | {OPERADOR} | {SEPARADOR})
+
+IDENTIFICADOR   	  =       ([:letter:] | "_") ([:letter:] | "_" | [0-9])*
+
+SALTO			      =	      "\n"
+
+COMENTARIO			  =       #.*{SALTO}
 
 %%
-{PARENTESIS_IZQ}	{}
-{PARENTESIS_DER}	{}
-{ESPACIO}			{}
-{SALTO}             {System.out.println("SALTO"); yybegin(CONTEXTO); this.espacios = 0;
-					fw.write("SALTO");}
-{RESERVADA} 		{System.out.print("RESERVADA("+ yytext() + ")");
-					fw.write("RESERVADA("+ yytext() + ")");}
-{IDENTIFICADOR}  	{System.out.print("IDENTIFICADOR(" + yytext() + ")");
-					fw.write("IDENTIFICADOR(" + yytext() + ")");}
-{COMENTARIO} 	 	{System.out.print("COMENTARIO(" + yytext() + ")");
-					fw.write("COMENTARIO(" + yytext() + ")");}
-{ENTERO} 			{System.out.print("ENTERO(" + yytext() + ")");
-					fw.write("ENTERO(" + yytext() + ")");}
-{BOOLEANO} 			{System.out.print("BOOLEANO(" + yytext() + ")");
-					fw.write("BOOLEANO(" + yytext() + ")");}
-{REAL}	 			{System.out.print("REAL(" + yytext() + ")");
-					fw.write("REAL(" + yytext() + ")");}
-{CADENAERRONEA}		{cadena = yytext();
-						System.out.print("\nERROR: Cadena mal formada: "+ cadena +", línea:" + (yyline+1) + "\n");
-                       	fw.write("\nERROR: Cadena mal formada: "+ cadena +", línea:" + (yyline+1) + "\n");
-                       	fw.flush();
-                       	fw.close();
-                       	System.exit(0);}					
-{CADENA}            {cadena = yytext();
-                      if (cadena.contains("\\") || cadena.substring(1, cadena.length()-1).contains("\"")) {
-                       		System.out.print("\nERROR: Cadena mal formada: "+ cadena +", línea:" + yyline + "\n");
-                       		fw.write("\nERROR: Cadena mal formada: "+ cadena +", línea:" + yyline + "\n");
-                       		fw.flush();
-                       		fw.close();
-                       		System.exit(0);
-                       } else { 
-                        	System.out.print("CADENA(" + yytext() + ")");
-                        	fw.write("CADENA(" + yytext() + ")"); 
-                       }
-					}
-{OPERADOR} 			{System.out.print("OPERADOR(" + yytext() + ")");
-					fw.write("OPERADOR(" + yytext() + ")");}
-{SEPARADOR}			{System.out.print("SEPARADOR(" + yytext() + ")");
-					fw.write("SEPARADOR(" + yytext() + ")");}
-.                   {System.out.print("\nERROR: Lexema no identificado, línea:" + yyline + "\n");
-					fw.write("\nERROR: Lexema no identificado, línea:" + yyline + "\n");
-					fw.flush(); 
-					fw.close();
-					System.exit(0);}
-<CONTEXTO>{			{ESPACIO}      {this.espacios++;}
-    				{TABULADOR}    {this.espacios+=4;}
-    				. {yypushback(1); tabulado = this.espacios; System.out.print(indentacion()); yybegin(YYINITIAL);}
-}
-.					{}
