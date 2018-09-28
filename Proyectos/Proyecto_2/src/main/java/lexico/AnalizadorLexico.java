@@ -4,11 +4,10 @@ import java.io.*;
 public class AnalizadorLexico {
     Alexico lexer;
 
-    public AnalizadorLexico(String archivo, FileWriter fileWriter){
+    public AnalizadorLexico(String archivo){
         try {
             Reader lector = new FileReader(archivo);
             lexer = new Alexico(lector);
-            lexer.fw = fileWriter;
         }
         catch(FileNotFoundException ex) {
             System.out.println(ex.getMessage() + " No se encontró el archivo;");
