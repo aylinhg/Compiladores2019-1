@@ -4,7 +4,6 @@
 **  @author Javier Téllez                                                      **
 **  @about Proyecto 2: Analizador léxico para la gramática.			  	       **
 *********************************************************************************/
-package lexico;
 import java.util.Stack;
 
 %%
@@ -53,6 +52,8 @@ import java.util.Stack;
 %}
 
 %class Alexico
+%debug
+%byaccj
 %public
 %unicode
 %standalone
@@ -172,7 +173,7 @@ COMENTARIO			  =       #.*{SALTO}
 	"("					{return Parser.PIZQUIERDO;}
 	")"					{return Parser.PDERECHO;}
 	{IDENTIFICADOR}		{return Parser.IDENTIFICADOR;}
-	{SALTO}				{yybegin(INDENTA); actual=0; return Parser.SALTO;}
+	{SALTO}				{yybegin(INDENTA); espacios=0; return Parser.SALTO;}
 	" "					{ }
 }
 

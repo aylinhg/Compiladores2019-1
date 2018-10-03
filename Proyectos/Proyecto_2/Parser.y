@@ -1,6 +1,6 @@
 %{
-	
-}%
+	import java.io.*;
+%}
 
 %token BOOLEANO ENTERO REAL AND NOT WHILE OR ELSE IF PRINT MAS MENOS MULT
 %token POTENCIA DIVISION DIV_PISO MODULO MENOR MAYOR MAYOR_IGUAL MENOR_IGUAL
@@ -94,8 +94,8 @@ atom: IDENTIFICADOR
 		| BOOLEANO
 		| PIZQUIERDO test PDERECHO;
 
-
-private Letras alexico;
+%%
+private Alexico alexico;
 
 /* Regresar átomos */
 private int yylex() {
@@ -116,13 +116,13 @@ public void yyerror(String error) {
 
 /* Constructor. */
 public Parser(Reader r) {
-	alexico = new Letras(r, this);
+	alexico = new Alexico(r, this);
 }
 
 /* Analizador sintáctico sobre un archivo. */
-public static void main(String[] args) {
+public static void main(String[] args) throws IOException {
 	try {
-		Parser yyparser = new Parser(new FileReader(args[0]));
+		Parser yyparser = new Parser(new FileReader("resources/fz_error_lexema.p"));
 		yyparser.yydebug = true;
 		yyparser.yyparse();
 	} catch(FileNotFoundException e) {
