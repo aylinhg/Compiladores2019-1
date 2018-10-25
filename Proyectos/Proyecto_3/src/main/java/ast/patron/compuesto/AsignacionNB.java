@@ -3,7 +3,7 @@ package ast.patron.compuesto;
 import ast.patron.visitante.Visitor;
 
 /**
- * EQ (=). Nodo de Asignación.
+ * EQ (=). Nodo de Asignacion.
  * @author PowerRangers
  */
 public class AsignacionNB extends NodoBinario{
