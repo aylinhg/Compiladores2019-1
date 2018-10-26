@@ -102,9 +102,10 @@ BOOLEAN		        =	("True" | "False")
 }
 <CADENA>{
   {CHAR_LITERAL}+                         { cadena = yytext();}
-  \"					  { yybegin(CODIGO);
-                                            cadena = "";
-					    return Parser.CADENA;}
+  \"					                             { yybegin(CODIGO);
+                                            yyparser.yylval = new StringHoja(cadena);
+                                           cadena = "";
+					                                 return Parser.CADENA;}
   {SALTO}				  { System.out.println("Unexpected newline. Line "+(yyline+1));
 					     System.exit(1);}
 }
@@ -135,34 +136,34 @@ BOOLEAN		        =	("True" | "False")
   "or"                                    { return Parser.OR;}
   "else"                                  { return Parser.ELSE;}
   "if"                                    { return Parser.IF;}
-  "print"				  { return Parser.PRINT;}
-  {SALTO}				  { yybegin(INDENTA); actual=0; return Parser.SALTO;}
-  {REAL}				  { return Parser.REAL;}
-  {ENTERO}				  { yyparser.yylval = new IntHoja(Integer.parseInt(yytext()));
+  "print"				                          { return Parser.PRINT;}
+  {SALTO}				                          { yybegin(INDENTA); actual=0; return Parser.SALTO;}
+  {REAL}				                          { yyparser.yylval = new RealHoja(Float.parseFloat(yytext())); return Parser.REAL;}
+  {ENTERO}				                        { yyparser.yylval = new IntHoja(Integer.parseInt(yytext()));
                                             return Parser.ENTERO; }
-  {BOOLEAN}                               { return Parser.BOOLEANO;}
-  {IDENTIFIER}				  { }
-  " "					  { }
+  {BOOLEAN}                               { yyparser.yylval = new BoolHoja(yytext()); return Parser.BOOLEANO;}
+  {IDENTIFIER}                            { yyparser.yylval = new IdentifierHoja(yytext()); return Parser.IDENTIFICADOR;}
+  " "					                            { }
 }
 <INDENTA>{
   {SALTO}                                 { actual = 0;}
-  " "				          { actual++;}
-  \t					  { actual += 4;}
-  .					  { yypushback(1);
-					    this.indentacion(actual);
-					    if(indents == 1){
-					      indents = 0;
-					      return Parser.INDENTA;
-					    }
-					  }
+  " "				                              { actual++;}
+  \t					                            { actual += 4;}
+                              .					  { yypushback(1);
+                            					     this.indentacion(actual);
+                            					     if(indents == 1){
+                            					      indents = 0;
+                            					      return Parser.INDENTA;
+                            					     }
+                            					    }
 }
 <<EOF>>                                   { this.indentacion(0);
-					    if(dedents > 0){
-					      dedents--;
-					      return Parser.DEINDENTA;
-					    }else{
+                              					    if(dedents > 0){
+                              					      dedents--;
+                              					      return Parser.DEINDENTA;
+                              					    }else{
                                               return 0;
-				            }
-					  }
+                              				      }
+                              					  }
 [^]					  { System.out.println("Error de sintáxis: caractér inválido: " + yytext() + "\nLínea "+(yyline+1));
 					    System.exit(1); }

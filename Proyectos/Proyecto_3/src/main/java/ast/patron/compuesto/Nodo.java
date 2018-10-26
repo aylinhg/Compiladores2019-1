@@ -1,4 +1,4 @@
-/** Componente. La clase genéria Nodo.
+/** Componente. La clase generica Nodo.
  * @author Diana Montes
  */
 package ast.patron.compuesto;
