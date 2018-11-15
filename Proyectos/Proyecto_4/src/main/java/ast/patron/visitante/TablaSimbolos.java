@@ -25,7 +25,7 @@ public class TablaSimbolos {
      * @param name
      * @return
      */
-    public Object lookUp(String name) {
+    public int lookUp(String name) {
         return tablaSimbolos.get(name);
     }
 
@@ -34,7 +34,7 @@ public class TablaSimbolos {
      * @param name
      * @param info
      */
-    public void insert(String name, Integer info) {
+    public void insert(String name, int info) {
         tablaSimbolos.put(name, info);
     }
 

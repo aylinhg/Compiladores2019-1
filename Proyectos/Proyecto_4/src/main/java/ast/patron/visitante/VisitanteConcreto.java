@@ -55,7 +55,7 @@ public class VisitanteConcreto implements Visitor {
         n.getPrimerHijo().accept(this);
         n.getUltimoHijo().accept(this);
         try {
-            n.setTipo(SistemaTipos.checkOpLogica(" && ", n.getPrimerHijo().getType(), n.getUltimoHijo().getType()));
+            n.setTipo(SistemaTipos.verificaOpLogica(" && ", n.getPrimerHijo().getType(), n.getUltimoHijo().getType()));
         } catch (TipadoException ex) {
             Logger.getLogger(VisitanteConcreto.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -172,7 +172,7 @@ public class VisitanteConcreto implements Visitor {
             System.err.println("\n\nLa variable " + n.getNombre() + " no tiene un valor definido");
             System.exit(0);
         }else{
-            n.setTipo(tablaSimbolos.get(n.getNombre()));
+            n.setTipo(tablaSimbolos.lookUp(n.getNombre()));
         }
     }
 
@@ -336,7 +336,7 @@ public class VisitanteConcreto implements Visitor {
         try {
             n.getPrimerHijo().accept(this);
             n.getUltimoHijo().accept(this);            
-            n.setTipo(SistemaTipos.verificaWhile(n.getPrimerHijo().getType(), n.getUltimoHijo().getType()));
+            n.setTipo(SistemaTipos.verificaWhile(n.getPrimerHijo().getType()));
         } catch (TipadoException ex) {
             Logger.getLogger(VisitanteConcreto.class.getName()).log(Level.SEVERE, null, ex);
         }
