@@ -38,4 +38,12 @@ public class TablaSimbolos {
         tablaSimbolos.put(name, info);
     }
 
+    /**
+     * Verifica que la tabla de símbolos contenga el elemento
+     * @param elem
+     */
+    public boolean contieneElem(String elem){
+        return tablaSimbolos.containsKey(elem);
+    }
+
 }
