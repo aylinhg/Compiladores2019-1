@@ -81,21 +81,21 @@ test: or_test {$$ = $1;}
 
 /*    or_test: (and_test 'or')* and_test  */
 or_test: and_test {$$ = $1;}
-       | aux2 and_test {$$ = $1; $$.agregaHijoFinal($2);}
+       | aux2 and_test {$$.agregaHijoFinal($2); $$ = $1;}
 ;
 /*    aux2: (and_test 'or')+  */
 aux2: and_test OR {$$ = new OrNB($1, null);}
-    | aux2 and_test OR {$$ = $1; $3.agregaHijoPrincipio($2); $$.agregaHijoFinal($3);}
+    | aux2 and_test OR {$1.agregaHijoFinal($2); $$ = new OrNB($1, null);}
 ;
 
 /*    and_expr: (not_test 'and')* not_test */
 and_test: not_test {$$ = $1;}
-        | aux7 not_test {$$ = $1; $$.agregaHijoFinal($2);}
+        | aux7 not_test {$$.agregaHijoFinal($2); $$ = $1;}
 ;
 
 /*    and_expr: (not_test 'and')+ */
 aux7: not_test AND {$$ = new AndNB($1, null);}
-    | aux7 not_test AND {$$ = $1; $3.agregaHijoPrincipio($2); $$.agregaHijoFinal($3);}
+    | aux7 not_test AND {$1.agregaHijoFinal($2); $$ = new AndNB($1, null);}
 ;
 
 /*    not_test: 'not' not_test | comparison */
