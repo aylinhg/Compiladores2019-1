@@ -13,6 +13,7 @@ public class BoolHoja extends Hoja {
         } else {
             valor = new Variable(false);
         }
+        tipo = 0;
     }
 
     public void accept(Visitor v){

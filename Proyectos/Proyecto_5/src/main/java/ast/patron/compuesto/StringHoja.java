@@ -9,7 +9,7 @@ public class StringHoja extends Hoja {
 
     public StringHoja(String s) {
         valor = new Variable(s);
-        tipo = 1;
+        tipo = 3;
     }
 
     public void accept(Visitor v) {
