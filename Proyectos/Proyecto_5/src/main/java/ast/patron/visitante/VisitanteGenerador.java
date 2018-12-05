@@ -226,4 +226,8 @@ public class VisitanteGenerador implements Visitor {
     public void visit(WhileNB n) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    public String getInstrucciones(){
+        return this.instrucciones;
+    }
 }
