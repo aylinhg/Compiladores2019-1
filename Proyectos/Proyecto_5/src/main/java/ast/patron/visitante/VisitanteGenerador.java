@@ -11,6 +11,7 @@ public class VisitanteGenerador implements Visitor {
     private static final int booleano = 0;
     private static final int entero = 1;
     private static final int cadena = 3;
+    private String datos = "main:\n.data\n";
     private String instrucciones = ".text\n";
 
     Registros reg = new Registros();
@@ -48,7 +49,22 @@ public class VisitanteGenerador implements Visitor {
     }
 
     public void visit(AsignacionNB n) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String id = n.getPrimerHijo().getNombre();
+        Nodo hd = n.getUltimoHijo();
+
+        if(!datos.contains("\t"+id+":")){
+            datos+="\t"+id+": .word 0\n";
+        }
+  
+        String objetivo = reg.getObjetivo();
+        String[] siguientes = reg.getNsiguientes(2);
+
+        // Genero el código del subárbol derecho
+        reg.setObjetivo(siguientes[1]);
+        hd.accept(this);
+
+        String opcode = "sw";
+        System.out.println(opcode + " " + objetivo + ", " + id);
     }
 
     public void visit(BoolHoja n) {
@@ -228,6 +244,6 @@ public class VisitanteGenerador implements Visitor {
     }
 
     public String getInstrucciones(){
-        return this.instrucciones;
+        return this.datos + this.instrucciones + "end:\t jr $ra";
     }
 }
